@@ -16,8 +16,6 @@ if ( !require( "ggplot2") ||
     install.packages( "rpart" )
     install.packages( "rpart.plot" )
     install.packages( "forecast" )
-
-
 }
 
 0 -> DEBUG
