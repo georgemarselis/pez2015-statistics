@@ -1,4 +1,4 @@
-#!/usr/bin/env /opt/local/bin/R
+#!/usr/bin/env R
 
 ######### libraries ##########
 ########## run once ##########
