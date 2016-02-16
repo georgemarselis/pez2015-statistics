@@ -4,6 +4,8 @@
 ########## run once ##########
 repos = 'https://cran.stat.unipd.it/'
 options( repos = structure( c( CRAN = repos ) ) )
+#pdf.options( encoding = 'utf-8' )
+
 
 if ( !require( "ggplot2") ||
      !require( "rpart" ) ||
@@ -19,12 +21,12 @@ if ( !require( "ggplot2") ||
 }
 
 0 -> DEBUG
-
+options( warn = 1 )
 ##############################
 
 ##############################
-# red
-weather = read.table("weather.all.2008.csv", header = T, sep = ",")
+# read file
+weather = read.table( "weather.all.2008.csv", header = T, sep = "," )
 # name the columns from imported weather.all.2008.csv file
 names( weather )
 w.month = as.numeric( format( as.Date( weather$dt ), "%m" ) )
@@ -37,8 +39,8 @@ weather = data.frame(weather, month = w.month, day = w.day, hour = w.hour)
 
 ##############################
 # name the columns from imported weather.all.2008.csv file
-names <- function(weather) {
-    c( "id", "temp", "bar", "hum", "sol", "w.d", "w.s", "dt", "month", "day", "hour")
+names <- function(weather) { list( "id", "temp", "bar", "hum", "sol", "w.d", "w.s", "dt", "month",
+          "day", "hour" )
 }
 
 
@@ -48,186 +50,76 @@ names <- function(weather) {
 # load library ggplot2
 library(ggplot2)
 
-ggplot( data = weather, aes( x = bar, y = temp ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face = "bold", colour = "#990000", size = 20),
-            axis.text.x  = element_text( vjust = 0.5, size = 16),
+
+plotgraph <- function(data = weather, kot = aes( x = bar, y = temp ),
+                      xaxis_label_label = "atmospheric pressure (bar)" ,
+                      y_axis_label = "temperature (C)" )
+{
+    ggplot( data, eval( kot ) ) +
+        geom_point( shape = 1 ) +
+        geom_smooth( ) +
+        theme(
+            axis.title.x = element_text( face = "bold", colour = "#990000", size = 20 ),
+            axis.text.x  = element_text( vjust = 0.5, size = 16 ),
             axis.title.y = element_text( face = "bold", colour = "#990000", size = 20 ),
             axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
         ) +
-    scale_x_continuous( name = "Ατμοσφαιρική Πίεση (bar) ") +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none" ) +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
+        scale_x_continuous( name = xaxis_label_label ) +
+        scale_y_continuous( name = y_axis_label ) +
+        theme( legend.position = "none" ) +
+        geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
+
+}
+
+cairo_pdf( './bar-vs-temp-1.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather, kot = aes( x = bar, y = temp ), xaxis_label_label = "atmospheric pressure (bar)", y_axis_label = "temperature (C)" )
 
 ##############################
 
-weather_result <- weather$bar < 950
+#weather_result <- weather$bar < 950
 sum( weather$bar < 950 )
 sel = which( weather$bar < 950 )
 
 ##############################
-
-ggplot( data = weather[ -sel, ], aes( x = bar, y = temp ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16),
-            axis.title.y = element_text( face = "bold", colour = "#990000", size = 20 ),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-    scale_x_continuous( name = "Ατμοσφαιρική Πίεση (bar) ") +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none" ) +
-    geom_rug( col = rgb( 0.9 , 0, 0, alpha = .1), sides = "lrtb", size = 1)
+cairo_pdf( './bar-vs-temp-2.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather[ -sel, ], kot = aes( x = bar, y = temp ), xaxis_label_label = "atmospheric pressure (bar)", y_axis_label = "temperature (C)" )
 
 ##############################
-
-ggplot( data = weather, aes( x = hum, y = temp ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16 ),
-            axis.title.y = element_text( face  = "bold", colour = "#990000" , size = 20 ),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-    scale_x_continuous( name = "Υγρασία (hum)" ) +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none") +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1), sides = "lrtb", size = 1 )
+cairo_pdf( './humidity-vs-temp-1.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather, kot = aes( x = hum, y = temp ), xaxis_label_label = "Υγρασία (hum)", y_axis_label = "Θερμοκρασία (temp)" )
 
 ##############################
+cairo_pdf( './solrad-vs-temp-1.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather, kot = aes( x = sol, y = temp ), xaxis_label_label = "Ακτινοβολία (sol)", y_axis_label = "Θερμοκρασία (temp)" )
 
-ggplot( data = weather, aes( x = sol, y = temp ) ) +
-    geom_point( shape = 1) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16 ),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-  scale_x_continuous( name = "Ακτινοβολία (sol) ") +
-  scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-  theme( legend.position = "none" ) +
-  geom_rug( col = rgb( 0.9, 0, 0, alpha = .1), sides = "lrtb", size = 1 )
+#############################
+cairo_pdf( './solrad-vs-temp-2-colorhour.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather, kot = aes( x = sol, y = temp, color = hour ), xaxis_label_label = "Ακτινοβολία (sol) ", y_axis_label = "Θερμοκρασία (temp)" )
 
 ##############################
-
-ggplot( data = weather, aes( x = sol, y = temp, color = hour ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16 ),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.y  = element_text(angle  = 90, vjust = 0.5, size = 16 )
-        ) +
-    scale_x_continuous( name = "Ακτινοβολία (sol) ") +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none") +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
+cairo_pdf( './solrad-vs-temp-3-colormonth.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather, kot = aes( x = sol, y = temp, color = month ), xaxis_label_label = "Ακτινοβολία (sol)", y_axis_label = "Θερμοκρασία (temp)" )
 
 ##############################
-
-ggplot( data = weather, aes( x = sol, y = temp, color = month ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-    scale_x_continuous( name = "Ακτινοβολία (sol)"   ) +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none" ) +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
+cairo_pdf( './windir-vs-temp-1.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather, aes( x = w.d, y = temp ), xaxis_label_label = "Κατεύθυνση ανέμου (w.d)", y_axis_label = "Θερμοκρασία (temp)" )
 
 ##############################
-
-ggplot( data = weather, aes( x = w.d, y = temp ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16 ),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-    scale_x_continuous( name = "Κατεύθυνση ανέμου (w.d)" ) +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none" ) +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1), sides = "lrtb", size = 1 )
-
-##############################
-
 sel1 = which( weather$w.d > 360 )
-
-ggplot( data = weather[ -sel1, ], aes( x = w.d, y = temp ) ) +
-    geom_point( shape = 1) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16 ),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-    scale_x_continuous( name = "Κατεύθυνση ανέμου (w.d)" ) +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none" ) +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
+cairo_pdf( './windir-vs-temp-2.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather[ -sel1, ], aes( x = w.d, y = temp ), xaxis_label_label = "Κατεύθυνση ανέμου (w.d)", y_axis_label = "Θερμοκρασία (temp)" )
 
 ##############################
-
-ggplot( data = weather, aes( x = w.s, y = temp ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-        axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-        axis.text.x  = element_text( vjust = 0.5, size = 16 ),
-        axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20),
-        axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 ) ) +
-    scale_x_continuous( name = "Ταχύτητα ανέμου (w.s)" ) +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none" ) +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1), sides = "lrtb", size = 1 )
+cairo_pdf( './windspeed-vs-temp-1.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather, aes( x = w.s, y = temp ), xaxis_label_label = "Ταχύτητα ανέμου (w.s)", y_axis_label = "Θερμοκρασία (temp)")
 
 ##############################
-
-ggplot( data = weather, aes( x = dt, y = temp ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-    scale_x_discrete( name = "Χρόνος (dt)" ) +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none" ) +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
+#cairo_pdf( './time-vs-temp-1.pdf', family = "DejaVu Sans" )
+#plotgraph( data = weather, aes( x = dt, y = temp ), xaxis_label_label = "Time (dt)", y_axis_label = "Temperature (C)" )
 
 ##############################
-
-ggplot( data = weather, aes( x = as.Date( dt, "%Y-%m-%d" ), y = temp ) ) +
-  geom_point( shape = 1 ) +
-  geom_smooth( ) +
-  theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16 ),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-  scale_x_date( name = "Χρόνος (dt)" ) +
-  scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-  theme( legend.position = "none" ) +
-  geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
+#cairo_pdf( './time-vs-temp-2.pdf', family = "DejaVu Sans" )
+#plotgraph( data = weather, aes( x = as.Date( dt, "%Y-%m-%d" ), y = temp ), xaxis_label_label = "Χρόνος (dt)", y_axis_label = "Θερμοκρασία (temp)" )
 
 ##############################
 
@@ -237,28 +129,13 @@ weather.f = weather[ -toremove , ]
 ##################
 
 ##### create pseudovariables
-
-ggplot( data = weather.f, aes( x = hour, y = sol ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16)
-        ) +
-    scale_x_discrete( name  = "Ώρα (hour)")  +
-    scale_y_continuous(name = "Ακτινοβολία (sol)" ) +
-    theme( legend.position  = "none" ) +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
-
+cairo_pdf( './hour-vs-solrad-2.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather.f, aes( x = hour, y = sol ), xaxis_label_label  = "Ώρα (hour)", y_axis_label = "Ακτινοβολία (sol)" )
 
 ##############################
-
 hour.f = rep( "day", length( weather.f$hour ) )
-
 hour_f_results <- hour.f
-if( 1 == DEBUG) {
+if ( 1 == DEBUG ) {
     hour_f_results
 }
 timeslices <- c( 0:4, 20:23 )
@@ -268,37 +145,25 @@ for (i in timeslices) {
 
 table( hour.f )
 
-ggplot( data = weather.f, aes( x = sol, y = temp, color = hour.f ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth( ) +
-    theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-    scale_x_continuous( name = "Ακτινοβολία (sol) ") +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    theme( legend.position = "none" ) +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1), sides = "lrtb", size = 1 )
+cairo_pdf( './solrad-vs-temp-2.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather.f, aes( x = sol, y = temp, color = hour.f ), xaxis_label_label = "Ακτινοβολία (sol) ", y_axis_label = "Θερμοκρασία (temp)" )
 
 ##############################
+weather.f = data.frame( weather.f, hour.f = hour.f )
+season = rep( "winter", length( weather.f$month ) )
 
-weather.f = data.frame(weather.f, hour.f = hour.f)
-
-season = rep(  "winter", length( weather.f$month ) )
+for (i in 4:6 ) {
+    season[ which( weather.f$month == i ) ] = c( "spring" )
+}
+for (i in 7:9 ) {
+    season[ which( weather.f$month == i ) ] = c("summer")
+}
+for (i in 10:12 ) {
+    season[ which( weather.f$month == i ) ] = c("fall")
+}
 season[ which( weather.f$month == 3 & weather.f$day > 21 ) ] = c( "spring" )
-season[ which( weather.f$month == 4) ] = c( "spring" )
-season[ which( weather.f$month == 5) ] = c( "spring" )
-season[ which( weather.f$month == 6) ] = c( "spring" )
 season[ which( weather.f$month == 6 & weather.f$day > 21 ) ] = c( "summer" )
-season[ which( weather.f$month == 7) ] = c("summer")
-season[ which( weather.f$month == 8) ] = c("summer")
-season[ which( weather.f$month == 9) ] = c("summer")
 season[ which( weather.f$month == 9 & weather.f$day > 23 ) ] = c( "fall" )
-season[ which( weather.f$month == 10) ] = c("fall")
-season[ which( weather.f$month == 11) ] = c("fall")
-season[ which( weather.f$month == 12) ] = c("fall")
 season[ which( weather.f$month == 12 & weather.f$day > 23 ) ] = c( "winter" )
 weather.f = data.frame( weather.f, season )
 
@@ -310,28 +175,18 @@ weather.f = data.frame( weather.f, mesi )
 
 ##############################
 
-ggplot( data = weather.f[ hour.f == "day" , ], aes( x = sol, y = temp, color = season ) ) +
-    geom_point( shape = 1 ) +
-    geom_smooth() +
-    theme(
-            axis.title.x = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.x  = element_text( vjust = 0.5, size = 16 ),
-            axis.title.y = element_text( face  = "bold", colour = "#990000", size = 20 ),
-            axis.text.y  = element_text( angle = 90, vjust = 0.5, size = 16 )
-        ) +
-    scale_x_continuous( name = "Ακτινοβολία (sol)" ) +
-    scale_y_continuous( name = "Θερμοκρασία (temp)" ) +
-    geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
+cairo_pdf( './solrad-vs-temp-3.pdf', family = "DejaVu Sans" )
+plotgraph( data = weather.f[ hour.f == "day" , ], aes( x = sol, y = temp, color = season ), xaxis_label_label = "Ακτινοβολία (sol)", y_axis_label = "Θερμοκρασία (temp)")
 
 ### reduce variables
-names <- function(weather.f) {
-    c( "id", "temp", "bar", "hum", "sol", "w.d", "w.s", "dt", "month", "day", "hour", "hour.f", "season", "mesi" )
+names <- function(weather.f) {  list( "id", "temp", "bar", "hum", "sol", "w.d", "w.s", "dt",
+          "month", "day", "hour", "hour.f", "season", "mesi" )
 }
 
 weather.f = weather.f[ , c( 2:7, 9, 11:14 ) ]
 
-names <- function(weather.f) {
-    c( "temp", "bar", "hum", "sol", "w.d", "w.s", "month", "hour", "hour.f", "season", "mesi" )
+names <- function(weather.f) { list( "temp", "bar", "hum", "sol", "w.d", "w.s", "month",
+          "hour", "hour.f", "season", "mesi" )
 }
 
 ### find maximal model ###
