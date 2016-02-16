@@ -1,11 +1,25 @@
-#!/usr/bin/evn /usr/bin/local/R
+#!/usr/bin/env /opt/local/bin/R
 
 ######### libraries ##########
 ########## run once ##########
-install.packages( "ggplot2" )
-install.packages( "rpart" )
-install.packages( "rpart.plot" )
-install.packages( "forecast" )
+repos = 'https://cran.stat.unipd.it/'
+options( repos = structure( c( CRAN = repos ) ) )
+
+if ( !require( "ggplot2") ||
+     !require( "rpart" ) ||
+     !require( "rpart.plot" ) ||
+     !require( "forecast" )
+    ) {
+    install.packages( "ggplot2" )
+    install.packages( "rpart" )
+    install.packages( "rpart.plot" )
+    install.packages( "forecast" )
+
+
+}
+
+0 -> DEBUG
+
 ##############################
 
 ##############################
@@ -23,9 +37,10 @@ weather = data.frame(weather, month = w.month, day = w.day, hour = w.hour)
 
 ##############################
 # name the columns from imported weather.all.2008.csv file
-names(weather)
-[1] "id"    "temp"  "bar"   "hum"   "sol"   "w.d"   "w.s"   "dt"    "month"
-[10] "day"   "hour"
+names <- function(weather) {
+    c( "id", "temp", "bar", "hum", "sol", "w.d", "w.s", "dt", "month", "day", "hour")
+}
+
 
 #### graphs for all variables vs temp
 
@@ -49,7 +64,7 @@ ggplot( data = weather, aes( x = bar, y = temp ) ) +
 
 ##############################
 
-weather$bar < 950
+weather_result <- weather$bar < 950
 sum( weather$bar < 950 )
 sel = which( weather$bar < 950 )
 
@@ -241,20 +256,16 @@ ggplot( data = weather.f, aes( x = hour, y = sol ) ) +
 ##############################
 
 hour.f = rep( "day", length( weather.f$hour ) )
-hour.f
-timeslices <- c( 0, 1, 2, 3, 4, 20, 22, 22, 23 )
+
+hour_f_results <- hour.f
+if( 1 == DEBUG) {
+    hour_f_results
+}
+timeslices <- c( 0:4, 20:23 )
 for (i in timeslices) {
     hour.f[ weather.f$hour == i  ] = c( "night" )
 }
-#hour.f[ weather.f$hour == 0  ] = c( "night" )
-#hour.f[ weather.f$hour == 1  ] = c( "night" )
-#hour.f[ weather.f$hour == 2  ] = c( "night" )
-#hour.f[ weather.f$hour == 3  ] = c( "night" )
-#hour.f[ weather.f$hour == 4  ] = c( "night" )
-#hour.f[ weather.f$hour == 20 ] = c( "night" )
-#hour.f[ weather.f$hour == 21 ] = c( "night" )
-#hour.f[ weather.f$hour == 22 ] = c( "night" )
-#hour.f[ weather.f$hour == 23 ] = c( "night" )
+
 table( hour.f )
 
 ggplot( data = weather.f, aes( x = sol, y = temp, color = hour.f ) ) +
@@ -313,14 +324,15 @@ ggplot( data = weather.f[ hour.f == "day" , ], aes( x = sol, y = temp, color = s
     geom_rug( col = rgb( 0.9, 0, 0, alpha = .1 ), sides = "lrtb", size = 1 )
 
 ### reduce variables
-names( weather.f )
-[1] "id"     "temp"   "bar"    "hum"    "sol"    "w.d"    "w.s"    "dt"     "month"
-[10] "day"    "hour"   "hour.f" "season" "mesi"
+names <- function(weather.f) {
+    c( "id", "temp", "bar", "hum", "sol", "w.d", "w.s", "dt", "month", "day", "hour", "hour.f", "season", "mesi" )
+}
 
 weather.f = weather.f[ , c( 2:7, 9, 11:14 ) ]
-names( weather.f )
-[1] "temp"   "bar"    "hum"    "sol"    "w.d"    "w.s"    "month"  "hour"   "hour.f"
-[10] "season" "mesi"
+
+names <- function(weather.f) {
+    c( "temp", "bar", "hum", "sol", "w.d", "w.s", "month", "hour", "hour.f", "season", "mesi" )
+}
 
 ### find maximal model ###
 
