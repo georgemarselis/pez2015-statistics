@@ -49,11 +49,11 @@ names <- function(weather) { list( "id", "temp", "bar", "hum", "sol", "w.d", "w.
 library(ggplot2)
 
 
-plotgraph <- function(data = weather, kot = aes( x = bar, y = temp ),
+plotgraph <- function(data = weather, kot,
                       xaxis_label_label = "atmospheric pressure (bar)" ,
                       y_axis_label = "temperature (C)" )
 {
-    ggplot( data, eval( kot ) ) +
+    ggplot( data, kot ) +
         geom_point( shape = 1 ) +
         geom_smooth( ) +
         theme(
@@ -70,7 +70,7 @@ plotgraph <- function(data = weather, kot = aes( x = bar, y = temp ),
 }
 
 cairo_pdf( './bar-vs-temp-1.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather, kot = aes( x = bar, y = temp ), xaxis_label_label = "atmospheric pressure (bar)", y_axis_label = "temperature (C)" )
+plotgraph( weather, aes( bar, temp ), "atmospheric pressure (bar)", "temperature (C)" )
 
 ##############################
 
@@ -80,44 +80,47 @@ sel = which( weather$bar < 950 )
 
 ##############################
 cairo_pdf( './bar-vs-temp-2.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather[ -sel, ], kot = aes( x = bar, y = temp ), xaxis_label_label = "atmospheric pressure (bar)", y_axis_label = "temperature (C)" )
+plotgraph( weather[ -sel, ], aes( bar, temp ), "atmospheric pressure (bar)", "temperature (C)" )
 
 ##############################
 cairo_pdf( './humidity-vs-temp-1.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather, kot = aes( x = hum, y = temp ), xaxis_label_label = "Υγρασία (hum)", y_axis_label = "Θερμοκρασία (temp)" )
+plotgraph( weather, aes( hum, temp ), "Υγρασία (hum)", "Θερμοκρασία (temp)" )
 
 ##############################
 cairo_pdf( './solrad-vs-temp-1.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather, kot = aes( x = sol, y = temp ), xaxis_label_label = "Ακτινοβολία (sol)", y_axis_label = "Θερμοκρασία (temp)" )
+plotgraph( weather, aes( sol, temp ), "Ακτινοβολία (sol)", "Θερμοκρασία (temp)" )
 
 #############################
 cairo_pdf( './solrad-vs-temp-2-colorhour.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather, kot = aes( x = sol, y = temp, color = hour ), xaxis_label_label = "Ακτινοβολία (sol) ", y_axis_label = "Θερμοκρασία (temp)" )
+plotgraph( weather, aes( x = sol, y = temp, color = hour ), "Ακτινοβολία (sol) ", "Θερμοκρασία (temp)" )
 
 ##############################
 cairo_pdf( './solrad-vs-temp-3-colormonth.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather, kot = aes( x = sol, y = temp, color = month ), xaxis_label_label = "Ακτινοβολία (sol)", y_axis_label = "Θερμοκρασία (temp)" )
+plotgraph( weather, aes( x = sol, y = temp, color = month ), "Ακτινοβολία (sol)","Θερμοκρασία (temp)" )
 
 ##############################
 cairo_pdf( './windir-vs-temp-1.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather, aes( x = w.d, y = temp ), xaxis_label_label = "Κατεύθυνση ανέμου (w.d)", y_axis_label = "Θερμοκρασία (temp)" )
+plotgraph( weather, aes( w.d, temp ), "Κατεύθυνση ανέμου (w.d)", "Θερμοκρασία (temp)" )
 
 ##############################
 sel1 = which( weather$w.d > 360 )
 cairo_pdf( './windir-vs-temp-2.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather[ -sel1, ], aes( x = w.d, y = temp ), xaxis_label_label = "Κατεύθυνση ανέμου (w.d)", y_axis_label = "Θερμοκρασία (temp)" )
+plotgraph( weather[ -sel1, ], aes( w.d, temp ), "Κατεύθυνση ανέμου (w.d)", "Θερμοκρασία (temp)" )
 
 ##############################
 cairo_pdf( './windspeed-vs-temp-1.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather, aes( x = w.s, y = temp ), xaxis_label_label = "Ταχύτητα ανέμου (w.s)", y_axis_label = "Θερμοκρασία (temp)")
+plotgraph( weather, aes( w.s, y = temp ), xaxis_label_label = "Ταχύτητα ανέμου (w.s)", "Θερμοκρασία (temp)")
 
 ##############################
 #cairo_pdf( './time-vs-temp-1.pdf', family = "DejaVu Sans" )
-#plotgraph( data = weather, aes( x = dt, y = temp ), xaxis_label_label = "Time (dt)", y_axis_label = "Temperature (C)" )
+plotgraph( weather, aes( dt, temp ), "Time (dt)","Temperature (C)" )
+#plotgraph( data = weather, aes( x = w.s, y = temp ), xaxis_label_label = "Χρόνος (dt)", y_axis_label = "Θερμοκρασία (temp)" )
 
 ##############################
 #cairo_pdf( './time-vs-temp-2.pdf', family = "DejaVu Sans" )
-#plotgraph( data = weather, aes( x = as.Date( dt, "%Y-%m-%d" ), y = temp ), xaxis_label_label = "Χρόνος (dt)", y_axis_label = "Θερμοκρασία (temp)" )
+#plotgraph( weather, aes( dt, temp ), "Χρόνος (dt)", "Θερμοκρασία (temp)" )
+#plotgraph( weather, aes( as.Date( dt, "%Y-%m-%d" ), temp ), "Χρόνος (dt)", "Θερμοκρασία (temp)" )
+#plotgraph( data = weather, aes( x = w.s, y = temp ), xaxis_label_label = "Χρόνος (dt)", y_axis_label = "Θερμοκρασία (temp)" )
 
 ##############################
 
@@ -128,7 +131,7 @@ weather.f = weather[ -toremove , ]
 
 ##### create pseudovariables
 cairo_pdf( './hour-vs-solrad-2.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather.f, aes( x = hour, y = sol ), xaxis_label_label  = "Ώρα (hour)", y_axis_label = "Ακτινοβολία (sol)" )
+plotgraph( weather.f, aes( hour, sol ), "Ώρα (hour)", "Ακτινοβολία (sol)" )
 
 ##############################
 hour.f = rep( "day", length( weather.f$hour ) )
@@ -144,7 +147,7 @@ for (i in timeslices) {
 table( hour.f )
 
 cairo_pdf( './solrad-vs-temp-2.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather.f, aes( x = sol, y = temp, color = hour.f ), xaxis_label_label = "Ακτινοβολία (sol) ", y_axis_label = "Θερμοκρασία (temp)" )
+plotgraph( weather.f, aes( x = sol, y = temp, color = hour.f ), "Ακτινοβολία (sol) ", "Θερμοκρασία (temp)" )
 
 ##############################
 weather.f = data.frame( weather.f, hour.f = hour.f )
@@ -174,7 +177,7 @@ weather.f = data.frame( weather.f, mesi )
 ##############################
 
 cairo_pdf( './solrad-vs-temp-3.pdf', family = "DejaVu Sans" )
-plotgraph( data = weather.f[ hour.f == "day" , ], aes( x = sol, y = temp, color = season ), xaxis_label_label = "Ακτινοβολία (sol)", y_axis_label = "Θερμοκρασία (temp)")
+plotgraph( weather.f[ hour.f == "day" , ], aes( x = sol, y = temp, color = season ), "Ακτινοβολία (sol)", "Θερμοκρασία (temp)")
 
 ### reduce variables
 names <- function(weather.f) {  list( "id", "temp", "bar", "hum", "sol", "w.d", "w.s", "dt",
