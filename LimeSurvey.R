@@ -1,21 +1,20 @@
 ######### libraries ##########
 ########## run once ##########
-install.packages("ggplot2")
-install.packages("rpart")
-install.packages("rpart.plot")
+#install.packages("ggplot2")
+#install.packages("rpart")
+#install.packages("rpart.plot")
 ##############################
 
-weather = read.table("ergasia.csv=", header=T, sep=",")
+weather = read.table("./ergasia.csv", sep=",")#, header = T) #, sep = ",")
 names(weather)
 w.month = as.numeric(format(as.Date(weather$dt), "%m"))
-w.day = as.numeric(format(as.Date(weather$dt), "%d"))
-w.date = as.POSIXlt(strptime(weather$dt, "%Y-%m-%d %H:%M"))
+w.day = as.numeric( format(as.Date(weather$dt), "%d"))
+w.date = as.POSIXlt( strptime(weather$dt, "%Y-%m-%d %H:%M"))
 w.hour = w.date$hour
 
-weather = data.frame(weather, month=w.month, day=w.day, hour=w.hour)
+weather = data.frame(weather, month = w.month, day = w.day, hour = w.hour)
 
-names(weather)
-[1] "age"    "sex"  "education" "nomos"   "nomos.n"   "jobtype"   "apasx"   "job"
+names <- function(weather) { list( "age", "sex", "education", "nomos","nomos.n", "jobtype", "apasx", "job") }
 
 #### graphs for all variables vs temp
 
