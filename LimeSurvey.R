@@ -5,7 +5,7 @@
 #install.packages("rpart.plot")
 ##############################
 
-weather = read.table("./ergasia.csv", sep=",")#, header = T) #, sep = ",")
+weather <- read.csv("./ergasia.csv", sep = "$", header = TRUE )
 names(weather)
 w.month = as.numeric(format(as.Date(weather$dt), "%m"))
 w.day = as.numeric( format(as.Date(weather$dt), "%d"))
