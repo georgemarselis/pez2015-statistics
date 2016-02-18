@@ -19,3 +19,7 @@ vignettes/*.pdf
 .httr-oauth
 
 Rplots.pdf
+.Rproj.user
+*.xlsx
+original.R
+"\316\243\316\221\316\2242015.Rproj"
