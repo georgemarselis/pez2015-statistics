@@ -1,10 +1,12 @@
+#!/usr/bin/evn R
+
 ######### libraries ##########
 Sys.setenv(JAVA_HOME = '/Library/Java//Home')
 # Java 1.6 will set up the 'Home' link under /Library/Java
 Sys.setenv(LD_LIBRARY_PATH = '$LD_LIBRARY_PATH:$JAVA_HOME/lib')
 
 #set everything to utf-8
-options(encoding="utf-8")
+options(encoding = "utf-8")
 
 repos = 'https://cran.stat.unipd.it/'
 options( repos = structure( c( CRAN = repos ) ) )
