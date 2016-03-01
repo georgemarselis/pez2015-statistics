@@ -3,6 +3,9 @@ Sys.setenv(JAVA_HOME = '/Library/Java//Home')
 # Java 1.6 will set up the 'Home' link under /Library/Java
 Sys.setenv(LD_LIBRARY_PATH = '$LD_LIBRARY_PATH:$JAVA_HOME/lib')
 
+#set everything to utf-8
+options(encoding="utf-8")
+
 repos = 'https://cran.stat.unipd.it/'
 options( repos = structure( c( CRAN = repos ) ) )
 
@@ -11,7 +14,7 @@ if ( !require( "ggplot2") ||
      !require( "rpart" ) ||
      !require( "rpart.plot" ) ||
      !require( "forecast" ) ||
-     !require( "xlsx" )
+     !require( "xlsx" ) ||
      !require( "stringi" )
 ) {
     install.packages( "ggplot2" )
@@ -59,7 +62,7 @@ readfile <- function ( ) {
     tempfile  <- "./kot.csv"
     excelfile <- "LimeSurvey.xlsx"
 
-    limesurveyresults <- read.table( file <- inputfile, sep = "$", header <- TRUE )#, encoding = "UTF-8" )
+    limesurveyresults <- read.table( file <- inputfile, sep = "$", header <- TRUE )
     write.table(limesurveyresults , file <- tempfile, sep = "$", fileEncoding = "UTF-8" )
     limesurveyresults <- read.table( file <- tempfile, sep = "$", header <- TRUE )
     unlink( tempfile )
