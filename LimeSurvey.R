@@ -62,19 +62,53 @@ readfile <- function ( ) {
     #filename vars
     inputfile <- "./ergasia.csv"
     tempfile  <- "./kot.csv"
-    excelfile <- "LimeSurvey.xlsx"
+#    excelfile <- "LimeSurvey.xlsx"
 
     limesurveyresults <- read.table( file <- inputfile, sep = "$", header <- TRUE )
     write.table(limesurveyresults , file <- tempfile, sep = "$", fileEncoding = "UTF-8" )
     limesurveyresults <- read.table( file <- tempfile, sep = "$", header <- TRUE )
     unlink( tempfile )
-    write.xlsx( limesurveyresults, excelfile )
+#    write.xlsx( limesurveyresults, excelfile )
     return( limesurveyresults )
 }
 
 limesurveyresults <- readfile( )
+attach( limesurveyresults )
 columnnames <- colnames( limesurveyresults )
 
+
+quantile( limesurveyresults$age, probs = c( 0, 0.25, 0.50, 0.75, 1) )
+boxplot( limesurveyresults$age, main = "boxplot", ylab = "age", ylim = c( 1, 11), las = 1 )
+
+
+# The default is c(3, 1, 0).
+axis.title.position <- 3
+axis.label.position <- 1
+axis.line.position <- 0
+
+# default is c(5, 4, 4, 2) + 0.1.
+bottom <- 5
+left   <- 6   # give more margin to the left, so the axis label can fit
+top    <- 4
+right  <- 2
+
+par( mgp = c( axis.title.position, axis.label.position, axis.line.position ) ,
+     mar = (c( bottom, left, top, right ) + 0.1 ) )
+
+#boxplot( limesurveyresults$age, data = limesurveyresults,  main = "boxplot", ylab = "age", ylim = c( 1, 11 ), yaxt = "n" )
+boxplot( limesurveyresults$age, data = limesurveyresults, axes = FALSE, ann = FALSE )
+
+
+ageGroupsTextLabels <- c( "15-19", "15-19", "20-24", "25-29", "30-34", "35-39",
+    "40-44", "45-49", "50-54", "55-59", "60-64", "65+")
+BOTTOM_SIDE <- 1
+LEFT_SIDE <- 2
+TICK_MARKS <- c( 1:12 )
+
+# axis( BOTTOM_SIDE, labels = FALSE, lwd.ticks = 0 ) # we don't care to draw an x-axis
+axis( LEFT_SIDE, at = TICK_MARKS, labels = ageGroupsTextLabels, col.axis = "red", cex.axis = 1, las = TRUE )
+title( ylab = "age", cex.lab = 2.0, line = 4.5)
+box()
 # lookup:
 #   scatterplot matrix
 #   how to create a scatterplot
@@ -83,5 +117,5 @@ columnnames <- colnames( limesurveyresults )
 # get a feel of things that can be correlated.
 #   that has to go through a scatterplot matrix?
 
-plotgraph( limesurveyresults, aes( limesurveyresults$age, limesurveyresults$education ), "age", "education" )
+#plotgraph( limesurveyresults, aes( limesurveyresults$age, limesurveyresults$education ), "age", "education" )
 
