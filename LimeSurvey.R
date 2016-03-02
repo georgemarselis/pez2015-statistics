@@ -119,3 +119,5 @@ box()
 
 #plotgraph( limesurveyresults, aes( limesurveyresults$age, limesurveyresults$education ), "age", "education" )
 
+boxplot( c( q611, q612, q613, q614, q615, q616, q617, q618, q619, q6119, q6111 ), data = limesurveyresults )
+
